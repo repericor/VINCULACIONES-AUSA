@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0E7C5B">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<title>Vinculación de Clientes — C-002</title>
+<style>
+:root{
+  --verde:#0E7C5B; --verde-osc:#0A5C44; --verde-cl:#E3F2EC;
+  --fondo:#F2F4F1; --carta:#FFFFFF; --tinta:#26302B; --gris:#7A857F;
+  --linea:#D8DEDA; --error:#B3261E; --error-cl:#FDECEA; --ok:#1B7A43;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+body{margin:0; font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif; background:var(--fondo); color:var(--tinta); font-size:16px}
+header{background:var(--verde); color:#fff; padding:14px 16px; position:sticky; top:0; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,.18)}
+header h1{margin:0; font-size:1.05rem; font-weight:700; letter-spacing:.2px}
+header p{margin:2px 0 0; font-size:.78rem; opacity:.85}
+main{max-width:680px; margin:0 auto; padding:12px 12px 90px}
+.seccion{background:var(--carta); border:1px solid var(--linea); border-radius:12px; margin:12px 0; overflow:hidden}
+.seccion>h2{margin:0; padding:11px 14px; background:var(--verde-cl); color:var(--verde-osc); font-size:.92rem; font-weight:700; border-bottom:1px solid var(--linea)}
+.cuerpo{padding:12px 14px}
+label{display:block; font-size:.8rem; font-weight:600; color:var(--gris); margin:10px 0 4px}
+label .req{color:var(--error)}
+input[type=text],input[type=tel],input[type=email],input[type=number],input[type=date],textarea,select{
+  width:100%; padding:11px 12px; font-size:1rem; border:1.5px solid var(--linea); border-radius:9px; background:#fff; color:var(--tinta); outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--verde)}
+input.mal{border-color:var(--error); background:var(--error-cl)}
+input.bien{border-color:var(--ok)}
+.aviso{font-size:.78rem; margin-top:4px}
+.aviso.mal{color:var(--error)} .aviso.bien{color:var(--ok)}
+.fila{display:flex; gap:10px} .fila>div{flex:1}
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:4px}
+.chip{border:1.5px solid var(--linea); border-radius:20px; padding:8px 14px; font-size:.88rem; cursor:pointer; user-select:none; background:#fff}
+.chip.on{background:var(--verde); border-color:var(--verde); color:#fff; font-weight:600}
+.nota{font-size:.76rem; color:var(--gris); margin-top:6px; line-height:1.35}
+/* firma */
+#firmaCanvas{width:100%; height:180px; border:1.5px dashed var(--verde); border-radius:9px; background:#fff; touch-action:none; display:block}
+.btnMini{background:#fff; border:1.5px solid var(--linea); border-radius:9px; padding:8px 14px; font-size:.85rem; cursor:pointer; margin-top:8px}
+/* fotos */
+.fotoBox{border:1.5px dashed var(--linea); border-radius:9px; padding:10px; text-align:center; margin-top:6px}
+.fotoBox img{max-width:100%; max-height:190px; border-radius:6px; display:block; margin:0 auto 8px}
+.fotoBtn{display:inline-block; background:var(--verde); color:#fff; border:none; border-radius:9px; padding:11px 16px; font-size:.92rem; font-weight:600; cursor:pointer}
+.fotoBtn.sec{background:#fff; color:var(--verde); border:1.5px solid var(--verde)}
+input[type=file]{display:none}
+/* botón principal */
+.barraFinal{position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1px solid var(--linea); padding:10px 14px; z-index:20}
+.barraFinal button{width:100%; max-width:680px; margin:0 auto; display:block; background:var(--verde); color:#fff; border:none; border-radius:11px; padding:15px; font-size:1.05rem; font-weight:700; cursor:pointer}
+.barraFinal button:disabled{background:#9DB5AA}
+#resultado{margin-top:10px}
+#resultado a{display:block; text-align:center; background:var(--verde-osc); color:#fff; text-decoration:none; border-radius:11px; padding:14px; font-weight:700; margin-top:8px}
+.errGlobal{background:var(--error-cl); color:var(--error); border:1px solid var(--error); border-radius:9px; padding:10px 12px; font-size:.85rem; margin-top:10px; display:none}
+.pieVersion{text-align:center; color:var(--gris); font-size:.72rem; margin:18px 0 4px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Vinculación de Clientes</h1>
+  <p>Formato C-002 · Solicitud de servicios de acueducto y alcantarillado · EPM</p>
+</header>
+<main>
+
+<div class="seccion"><h2>Fecha y solicitud</h2><div class="cuerpo">
+  <div class="fila">
+    <div><label>Año</label><input type="number" id="f_ano" inputmode="numeric"></div>
+    <div><label>Mes</label><input type="number" id="f_mes" inputmode="numeric" min="1" max="12"></div>
+    <div><label>Día</label><input type="number" id="f_dia" inputmode="numeric" min="1" max="31"></div>
+  </div>
+  <label>Solicitud No.</label><input type="text" id="f_solicitud">
+</div></div>
+
+<div class="seccion"><h2>Información del cliente</h2><div class="cuerpo">
+  <label>Tipo de persona <span class="req">*</span></label>
+  <div class="chips" id="g_persona">
+    <div class="chip" data-v="natural">Persona natural</div>
+    <div class="chip" data-v="juridica">Persona jurídica</div>
+  </div>
+  <label>Nombre o Razón Social <span class="req">*</span></label><input type="text" id="c_nombre">
+  <label>Tipo de documento <span class="req">*</span></label>
+  <div class="chips" id="g_tipodoc">
+    <div class="chip" data-v="cedula">Cédula</div>
+    <div class="chip" data-v="nit">NIT</div>
+  </div>
+  <label>Número de identificación <span class="req">*</span></label><input type="text" id="c_numid" inputmode="numeric">
+  <div id="bloqueRep" style="display:none">
+    <label>Nombre del representante legal</label><input type="text" id="c_replegal">
+    <label>Identificación del representante</label><input type="text" id="c_repid" inputmode="numeric">
+  </div>
+  <label>Dirección para la cual solicita el servicio <span class="req">*</span></label><input type="text" id="c_direccion">
+  <label>Estado del inmueble</label>
+  <div class="chips" id="g_inmueble">
+    <div class="chip" data-v="terminado">Inmueble terminado</div>
+    <div class="chip" data-v="construir">Inmueble por construir</div>
+  </div>
+  <div class="fila">
+    <div><label>Municipio <span class="req">*</span></label><input type="text" id="c_municipio"></div>
+    <div><label>Barrio / vereda</label><input type="text" id="c_barrio"></div>
+  </div>
+  <label>Teléfono fijo</label><input type="tel" id="c_telefono" inputmode="tel">
+
+  <label>Celular <span class="req">*</span></label><input type="tel" id="c_celular" inputmode="tel">
+  <label>Confirme el celular <span class="req">*</span></label><input type="tel" id="c_celular2" inputmode="tel">
+  <div class="aviso" id="a_celular"></div>
+
+  <label>E-mail</label><input type="email" id="c_email" autocapitalize="none">
+  <label>Confirme el e-mail</label><input type="email" id="c_email2" autocapitalize="none">
+  <div class="aviso" id="a_email"></div>
+
+  <div class="fila">
+    <div><label>Nombre de contacto</label><input type="text" id="c_contacto"></div>
+    <div><label>Celular contacto</label><input type="tel" id="c_celcontacto" inputmode="tel"></div>
+  </div>
+  <label>Calidad del cliente</label>
+  <div class="chips" id="g_calidad">
+    <div class="chip" data-v="propietario">Propietario</div>
+    <div class="chip" data-v="poseedor">Poseedor</div>
+    <div class="chip" data-v="arrendatario">Arrendatario</div>
+    <div class="chip" data-v="otro">Otro</div>
+  </div>
+  <div id="bloqueCual" style="display:none"><label>¿Cuál?</label><input type="text" id="c_cual"></div>
+</div></div>
+
+<div class="seccion"><h2>Solicitud del servicio nuevo</h2><div class="cuerpo">
+  <label>Uso que le dará al servicio</label>
+  <div class="chips" id="g_uso">
+    <div class="chip" data-v="residencial">Residencial</div>
+    <div class="chip" data-v="comercial">Comercial</div>
+    <div class="chip" data-v="industrial">Industrial</div>
+    <div class="chip" data-v="oficial">Oficial</div>
+  </div>
+  <label>Clase de acometida</label>
+  <div class="chips" id="g_clase">
+    <div class="chip" data-v="estandar">Estándar</div>
+    <div class="chip" data-v="general">General</div>
+    <div class="chip" data-v="controlada">Controlada</div>
+    <div class="chip" data-v="na">N/A</div>
+  </div>
+  <label>Permanencia del servicio</label>
+  <div class="chips" id="g_permanencia">
+    <div class="chip" data-v="definitivo">Definitivo</div>
+    <div class="chip" data-v="temporal">Temporal</div>
+  </div>
+</div></div>
+
+<div class="seccion"><h2>Solicitud asociada a un servicio existente</h2><div class="cuerpo">
+  <div class="chips" id="g_existente" data-multi="1">
+    <div class="chip" data-v="nuevoAcue">Servicio nuevo acueducto</div>
+    <div class="chip" data-v="individualizacion">Individualización multiusuarios</div>
+    <div class="chip" data-v="cambioAcoRepo">Cambio de acometida (Reposición)</div>
+    <div class="chip" data-v="cambioMedidor">Cambio de medidor</div>
+    <div class="chip" data-v="trasladoAco">Traslado acometida</div>
+    <div class="chip" data-v="cambioDiamMed">Cambio de diámetro medidor</div>
+    <div class="chip" data-v="cambioDiamAco">Cambio de diámetro acometida</div>
+    <div class="chip" data-v="realzar">Realzar o profundizar el medidor</div>
+    <div class="chip" data-v="retiro">Retiro definitivo (demolición)</div>
+    <div class="chip" data-v="otros">Otros</div>
+  </div>
+  <div id="bloqueOtros" style="display:none"><label>¿Cuál otro?</label><input type="text" id="e_otros"></div>
+</div></div>
+
+<div class="seccion"><h2>Servicio o trabajo solicitado alcantarillado</h2><div class="cuerpo">
+  <div class="chips" id="g_alcantarillado" data-multi="1">
+    <div class="chip" data-v="nuevoAlc">Servicio nuevo de alcantarillado</div>
+    <div class="chip" data-v="cambioRedes">Cambio de redes internas</div>
+    <div class="chip" data-v="cambioRepoAco">Cambio o reposición acometida</div>
+  </div>
+</div></div>
+
+<div class="seccion"><h2>Información del ejecutor</h2><div class="cuerpo">
+  <label>Quién ejecuta los trabajos</label>
+  <div class="chips" id="g_quien">
+    <div class="chip" data-v="epm">EPM</div>
+    <div class="chip" data-v="urbanizador">Urbanizador</div>
+    <div class="chip" data-v="constructor">Constructor o instalador</div>
+  </div>
+  <label>Nombre de quien realiza el trabajo</label><input type="text" id="x_nombre" value="SANEAR S.A.S.">
+  <div class="fila">
+    <div><label>Teléfono</label><input type="tel" id="x_tel" inputmode="tel"></div>
+    <div><label>Celular</label><input type="tel" id="x_cel" inputmode="tel"></div>
+  </div>
+  <label>E-mail</label><input type="email" id="x_email" autocapitalize="none">
+  <label>Nombre del proyecto</label><input type="text" id="x_proyecto">
+  <label>Tipo de proyecto</label>
+  <div class="chips" id="g_tipoproy">
+    <div class="chip" data-v="urbanizacion">Urbanización</div>
+    <div class="chip" data-v="edificio">Edificio</div>
+  </div>
+  <label>N° instalaciones o interiores del proyecto</label><input type="text" id="x_numinst" inputmode="numeric">
+  <label>Dirección medidor general</label><input type="text" id="x_dirmedidor">
+  <label>Observaciones</label><textarea id="x_observaciones" rows="3"></textarea>
+  <label>Hidrante — solo si se solicita autorización de uso</label>
+  <div class="fila">
+    <div><label>Fecha inicio</label><input type="date" id="x_hidini"></div>
+    <div><label>Fecha fin</label><input type="date" id="x_hidfin"></div>
+  </div>
+</div></div>
+
+<div class="seccion"><h2>Autorización de datos (página 2)</h2><div class="cuerpo">
+  <label>Acepta declaración Ley 1581 <span class="req">*</span></label>
+  <div class="chips" id="g_ley">
+    <div class="chip" data-v="si">SÍ</div>
+    <div class="chip" data-v="no">NO</div>
+  </div>
+  <label>Canales de contacto autorizados — mínimo 2 <span class="req">*</span></label>
+  <div class="chips" id="g_canales" data-multi="1">
+    <div class="chip" data-v="todos">Todos los canales</div>
+    <div class="chip" data-v="correo">Correo electrónico</div>
+    <div class="chip" data-v="sms">Mensaje de texto (SMS)</div>
+    <div class="chip" data-v="whatsapp">WhatsApp</div>
+    <div class="chip" data-v="telefonico">Telefónico</div>
+    <div class="chip" data-v="correspondencia">Correspondencia</div>
+  </div>
+  <div class="nota">Si el cliente no selecciona canales, la norma entiende que acepta todos. La app exige mínimo 2 o "Todos los canales".</div>
+</div></div>
+
+<div class="seccion"><h2>Firma del cliente <span style="font-weight:400">(en pantalla, con el dedo)</span></h2><div class="cuerpo">
+  <canvas id="firmaCanvas"></canvas>
+  <button class="btnMini" id="btnLimpiarFirma" type="button">Borrar y firmar de nuevo</button>
+  <div class="nota">La firma se estampará en la casilla "Firma del cliente o representante" de la página 2.</div>
+</div></div>
+
+<div class="seccion"><h2>Anexos fotográficos</h2><div class="cuerpo">
+  <label>Anexo 1 — Foto del servicio público existente <span class="req">*</span></label>
+  <div class="fotoBox" id="box_foto1">
+    <img id="img_foto1" style="display:none" alt="">
+    <button class="fotoBtn" type="button" onclick="document.getElementById('foto1').click()">📷 Tomar / elegir foto</button>
+    <input type="file" id="foto1" accept="image/*" capture="environment">
+  </div>
+  <label>Anexo 2 — Foto de la cédula del cliente <span class="req">*</span></label>
+  <div class="fotoBox" id="box_foto2">
+    <img id="img_foto2" style="display:none" alt="">
+    <button class="fotoBtn" type="button" onclick="document.getElementById('foto2').click()">📷 Tomar / elegir foto</button>
+    <input type="file" id="foto2" accept="image/*" capture="environment">
+  </div>
+</div></div>
+
+<div class="errGlobal" id="errGlobal"></div>
+<div id="resultado"></div>
+<p class="pieVersion">Vinculación C-002 · v1 · funciona sin conexión</p>
+</main>
+
+<div class="barraFinal"><button id="btnGenerar" type="button">Generar PDF de la solicitud</button></div>
+
+<script src="jspdf.umd.min.js"></script>
+<script>
+/* ================= imágenes del formato (base64) ================= */
+let PAGE1=null, PAGE2=null;
+async function cargarFondos(){
+  async function aB64(u){ const r=await fetch(u); const b=await r.blob();
+    return new Promise(res=>{ const f=new FileReader(); f.onload=()=>res(f.result); f.readAsDataURL(b); }); }
+  [PAGE1,PAGE2] = await Promise.all([aB64('fondo1.png'), aB64('fondo2.png')]);
+}
+const fondosListos = cargarFondos();
+
+/* ================= utilidades UI ================= */
+function $(id){return document.getElementById(id)}
+const estado = { grupos:{}, foto1:null, foto2:null };
+
+document.querySelectorAll('.chips').forEach(g=>{
+  const multi = g.dataset.multi==='1';
+  estado.grupos[g.id] = multi? [] : null;
+  g.querySelectorAll('.chip').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      if(multi){
+        ch.classList.toggle('on');
+        estado.grupos[g.id] = [...g.querySelectorAll('.chip.on')].map(c=>c.dataset.v);
+      }else{
+        g.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+        ch.classList.add('on');
+        estado.grupos[g.id] = ch.dataset.v;
+      }
+      if(g.id==='g_persona') $('bloqueRep').style.display = estado.grupos.g_persona==='juridica'?'block':'none';
+      if(g.id==='g_calidad') $('bloqueCual').style.display = estado.grupos.g_calidad==='otro'?'block':'none';
+      if(g.id==='g_existente') $('bloqueOtros').style.display = estado.grupos.g_existente.includes('otros')?'block':'none';
+    });
+  });
+});
+
+/* valores por defecto */
+(function(){ const g=document.querySelector('#g_quien .chip[data-v="constructor"]'); if(g) g.click(); })();
+
+/* fecha de hoy, editable */
+(function(){ const h=new Date();
+  $('f_ano').value=h.getFullYear(); $('f_mes').value=h.getMonth()+1; $('f_dia').value=h.getDate();
+})();
+
+/* ================= verificación doble de celular y correo ================= */
+function verificarPar(id1, id2, idAviso, nombre){
+  const a=$(id1), b=$(id2), av=$(idAviso);
+  function chequear(){
+    const v1=a.value.trim(), v2=b.value.trim();
+    if(!v1 && !v2){ b.className=''; av.textContent=''; return; }
+    if(v2 && v1===v2){ b.className='bien'; av.className='aviso bien'; av.textContent='✓ '+nombre+' coincide'; }
+    else if(v2){ b.className='mal'; av.className='aviso mal'; av.textContent='✗ Los dos '+nombre+'s no coinciden, revise'; }
+    else { b.className=''; av.textContent=''; }
+  }
+  a.addEventListener('input',chequear); b.addEventListener('input',chequear);
+  b.addEventListener('paste',e=>{e.preventDefault(); av.className='aviso mal'; av.textContent='Escriba el dato de nuevo, no lo pegue';});
+}
+verificarPar('c_celular','c_celular2','a_celular','celular');
+verificarPar('c_email','c_email2','a_email','correo');
+
+/* ================= firma táctil ================= */
+const cv=$('firmaCanvas'), ctx=cv.getContext('2d');
+let firmando=false, hayFirma=false;
+function ajustarCanvas(){
+  const r=cv.getBoundingClientRect(), esc=window.devicePixelRatio||1;
+  const prev = hayFirma? cv.toDataURL() : null;
+  cv.width=r.width*esc; cv.height=r.height*esc; ctx.scale(esc,esc);
+  ctx.lineWidth=2.2; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#1a2430';
+  if(prev){ const im=new Image(); im.onload=()=>ctx.drawImage(im,0,0,r.width,r.height); im.src=prev; }
+}
+window.addEventListener('resize',ajustarCanvas); ajustarCanvas();
+function pos(e){ const r=cv.getBoundingClientRect(); const t=e.touches?e.touches[0]:e;
+  return {x:t.clientX-r.left, y:t.clientY-r.top}; }
+function ini(e){ e.preventDefault(); firmando=true; const p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+function mov(e){ if(!firmando)return; e.preventDefault(); const p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); hayFirma=true; }
+function fin(){ firmando=false; }
+cv.addEventListener('touchstart',ini,{passive:false}); cv.addEventListener('touchmove',mov,{passive:false}); cv.addEventListener('touchend',fin);
+cv.addEventListener('mousedown',ini); cv.addEventListener('mousemove',mov); window.addEventListener('mouseup',fin);
+$('btnLimpiarFirma').addEventListener('click',()=>{ ctx.clearRect(0,0,cv.width,cv.height); hayFirma=false; ajustarCanvas(); });
+
+/* ================= fotos con reducción de tamaño ================= */
+function cargarFoto(inputId, imgId, clave){
+  $(inputId).addEventListener('change', async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const url=URL.createObjectURL(f);
+    const im=new Image();
+    im.onload=()=>{
+      const MAX=1400; let w=im.width,h=im.height;
+      if(Math.max(w,h)>MAX){ const k=MAX/Math.max(w,h); w=Math.round(w*k); h=Math.round(h*k); }
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(im,0,0,w,h);
+      estado[clave]={data:c.toDataURL('image/jpeg',0.82), w, h};
+      const vista=$(imgId); vista.src=estado[clave].data; vista.style.display='block';
+      URL.revokeObjectURL(url);
+    };
+    im.src=url;
+  });
+}
+cargarFoto('foto1','img_foto1','foto1');
+cargarFoto('foto2','img_foto2','foto2');
+
+/* ================= coordenadas sobre el formato (px de imagen 816x1056) ================= */
+/* Calibración: si un dato sale corrido en el PDF, se ajusta aquí. K convierte px→pt. */
+const K = 612/816; /* 0.75 */
+const C1 = { /* página 1: coordenadas medidas por análisis de píxel (v2) */
+  ano:{x:56,y:145}, mes:{x:97,y:145}, dia:{x:147,y:145}, solicitud:{x:650,y:118},
+  chkNatural:{x:388,y:168}, chkJuridica:{x:516,y:168},
+  nombre:{x:176,y:197},
+  chkNIT:{x:170,y:215}, chkCedula:{x:232,y:215}, numid:{x:514,y:220},
+  replegal:{x:284,y:242}, repid:{x:685,y:242},
+  direccion:{x:254,y:265}, chkTerminado:{x:515,y:260}, chkConstruir:{x:650,y:260},
+  municipio:{x:111,y:287}, barrio:{x:496,y:287},
+  telefono:{x:105,y:310}, email:{x:309,y:310}, celular:{x:629,y:310},
+  contacto:{x:217,y:332}, celcontacto:{x:626,y:332},
+  chkPropietario:{x:190,y:350}, chkPoseedor:{x:288,y:350}, chkArrendatario:{x:378,y:350}, chkOtro:{x:480,y:350}, cual:{x:570,y:354},
+  chkUso:{residencial:{x:60,y:432},comercial:{x:136,y:432},industrial:{x:206,y:432},oficial:{x:280,y:432}},
+  chkClase:{estandar:{x:338,y:432},general:{x:411,y:432},controlada:{x:476,y:432},na:{x:556,y:432}},
+  chkPerm:{definitivo:{x:612,y:432},temporal:{x:708,y:432}},
+  chkExist:{nuevoAcue:{x:59,y:548},cambioMedidor:{x:326,y:548},cambioDiamAco:{x:592,y:548},
+            individualizacion:{x:59,y:568},trasladoAco:{x:326,y:566},realzar:{x:592,y:566},
+            cambioAcoRepo:{x:59,y:586},cambioDiamMed:{x:326,y:586},retiro:{x:592,y:586},
+            otros:{x:59,y:610}},
+  otrosTexto:{x:112,y:616},
+  chkAlc:{nuevoAlc:{x:59,y:674},cambioRedes:{x:326,y:674},cambioRepoAco:{x:592,y:674}},
+  chkQuien:{epm:{x:230,y:736},urbanizador:{x:306,y:736},constructor:{x:424,y:736}},
+  xnombre:{x:230,y:766},
+  xtel:{x:103,y:789}, xcel:{x:262,y:789}, xemail:{x:473,y:789},
+  xproyecto:{x:164,y:811},
+  chkUrb:{x:59,y:828}, chkEdif:{x:160,y:828}, xnuminst:{x:552,y:833},
+  xdirmedidor:{x:190,y:856},
+  observaciones:{x:130,y:878, ancho:630, salto:23, max:4},
+  hidini:{x:450,y:980}, hidfin:{x:693,y:980}
+};
+const C2 = { /* página 2 (v2) */
+  chkSI:{x:487,y:83}, chkNO:{x:527,y:83},
+  canales:{todos:{x:124,y:494},correo:{x:243,y:494},sms:{x:360,y:494},whatsapp:{x:476,y:494},telefonico:{x:594,y:494},correspondencia:{x:735,y:494}},
+  nombreCliente:{x:105,y:604}, cedulaCliente:{x:380,y:604},
+  firma:{x:575,y:552, w:185, h:52}
+};
+
+/* ================= generación del PDF ================= */
+function txt(doc,c,valor,tam){ if(!valor)return; doc.setFontSize(tam||9); doc.text(String(valor), c.x*K, c.y*K); }
+function marcar(doc,c){ if(!c)return; doc.setFontSize(11); doc.setFont(undefined,'bold'); doc.text('X', c.x*K, (c.y+4)*K, {align:'center'}); doc.setFont(undefined,'normal'); }
+
+$('btnGenerar').addEventListener('click', async ()=>{
+  const err=[]; const g=estado.grupos;
+  if(!g.g_persona) err.push('Seleccione persona natural o jurídica.');
+  if(!$('c_nombre').value.trim()) err.push('Falta el nombre o razón social.');
+  if(!g.g_tipodoc) err.push('Seleccione el tipo de documento.');
+  if(!$('c_numid').value.trim()) err.push('Falta el número de identificación.');
+  if(!$('c_direccion').value.trim()) err.push('Falta la dirección del servicio.');
+  if(!$('c_municipio').value.trim()) err.push('Falta el municipio.');
+  const cel=$('c_celular').value.trim();
+  if(!cel) err.push('Falta el celular del cliente.');
+  else if(cel!==$('c_celular2').value.trim()) err.push('El celular y su confirmación no coinciden.');
+  const em=$('c_email').value.trim();
+  if(em && em!==$('c_email2').value.trim()) err.push('El e-mail y su confirmación no coinciden.');
+  if(!g.g_ley) err.push('Marque SÍ o NO en la declaración Ley 1581.');
+  const can=g.g_canales||[];
+  if(!(can.includes('todos')||can.length>=2)) err.push('Seleccione mínimo 2 canales de contacto (o "Todos los canales").');
+  if(!hayFirma) err.push('Falta la firma del cliente.');
+  if(!estado.foto1) err.push('Falta la foto del servicio existente (Anexo 1).');
+  if(!estado.foto2) err.push('Falta la foto de la cédula (Anexo 2).');
+  const eg=$('errGlobal');
+  if(err.length){ eg.style.display='block'; eg.innerHTML='<b>Antes de generar el PDF:</b><br>• '+err.join('<br>• '); eg.scrollIntoView({behavior:'smooth'}); return; }
+  eg.style.display='none';
+
+  const btn=$('btnGenerar'); btn.disabled=true; btn.textContent='Generando PDF…';
+  try{
+    await fondosListos;
+    if(!PAGE1||!PAGE2) throw new Error('No se pudieron cargar los fondos del formato. Abra la app una vez con internet.');
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:'pt', format:'letter'}); /* 612 x 792 pt */
+    doc.addImage(PAGE1,'PNG',0,0,612,792);
+    doc.setTextColor(20,30,60);
+
+    /* fecha y solicitud */
+    txt(doc,C1.ano,$('f_ano').value); txt(doc,C1.mes,$('f_mes').value); txt(doc,C1.dia,$('f_dia').value);
+    txt(doc,C1.solicitud,$('f_solicitud').value);
+    marcar(doc, g.g_persona==='natural'?C1.chkNatural: g.g_persona==='juridica'?C1.chkJuridica:null);
+    txt(doc,C1.nombre,$('c_nombre').value);
+    marcar(doc, g.g_tipodoc==='nit'?C1.chkNIT: g.g_tipodoc==='cedula'?C1.chkCedula:null);
+    txt(doc,C1.numid,$('c_numid').value);
+    txt(doc,C1.replegal,$('c_replegal').value); txt(doc,C1.repid,$('c_repid').value);
+    txt(doc,C1.direccion,$('c_direccion').value,8.5);
+    if(g.g_inmueble==='terminado') marcar(doc,C1.chkTerminado);
+    if(g.g_inmueble==='construir') marcar(doc,C1.chkConstruir);
+    txt(doc,C1.municipio,$('c_municipio').value); txt(doc,C1.barrio,$('c_barrio').value);
+    txt(doc,C1.telefono,$('c_telefono').value); txt(doc,C1.email,$('c_email').value,8.5); txt(doc,C1.celular,cel);
+    txt(doc,C1.contacto,$('c_contacto').value); txt(doc,C1.celcontacto,$('c_celcontacto').value);
+    const mCal={propietario:C1.chkPropietario,poseedor:C1.chkPoseedor,arrendatario:C1.chkArrendatario,otro:C1.chkOtro};
+    if(g.g_calidad) marcar(doc,mCal[g.g_calidad]);
+    if(g.g_calidad==='otro') txt(doc,C1.cual,$('c_cual').value);
+    if(g.g_uso) marcar(doc,C1.chkUso[g.g_uso]);
+    if(g.g_clase) marcar(doc,C1.chkClase[g.g_clase]);
+    if(g.g_permanencia) marcar(doc,C1.chkPerm[g.g_permanencia]);
+    (g.g_existente||[]).forEach(v=>marcar(doc,C1.chkExist[v]));
+    if((g.g_existente||[]).includes('otros')) txt(doc,C1.otrosTexto,$('e_otros').value,8.5);
+    (g.g_alcantarillado||[]).forEach(v=>marcar(doc,C1.chkAlc[v]));
+    if(g.g_quien) marcar(doc,C1.chkQuien[g.g_quien]);
+    txt(doc,C1.xnombre,$('x_nombre').value);
+    txt(doc,C1.xtel,$('x_tel').value); txt(doc,C1.xcel,$('x_cel').value); txt(doc,C1.xemail,$('x_email').value,8.5);
+    txt(doc,C1.xproyecto,$('x_proyecto').value);
+    if(g.g_tipoproy==='urbanizacion') marcar(doc,C1.chkUrb);
+    if(g.g_tipoproy==='edificio') marcar(doc,C1.chkEdif);
+    txt(doc,C1.xnuminst,$('x_numinst').value);
+    txt(doc,C1.xdirmedidor,$('x_dirmedidor').value);
+    const obs=$('x_observaciones').value.trim();
+    if(obs){ doc.setFontSize(8.5);
+      const lineas=doc.splitTextToSize(obs, C1.observaciones.ancho*K).slice(0,C1.observaciones.max);
+      lineas.forEach((l,i)=>doc.text(l, C1.observaciones.x*K, (C1.observaciones.y+i*C1.observaciones.salto)*K));
+    }
+    txt(doc,C1.hidini,$('x_hidini').value); txt(doc,C1.hidfin,$('x_hidfin').value);
+
+    /* página 2 */
+    doc.addPage('letter'); doc.addImage(PAGE2,'PNG',0,0,612,792);
+    marcar(doc, g.g_ley==='si'?C2.chkSI:C2.chkNO);
+    if(can.includes('todos')) marcar(doc,C2.canales.todos);
+    else can.forEach(v=>marcar(doc,C2.canales[v]));
+    doc.setFontSize(9);
+    doc.text($('c_nombre').value, C2.nombreCliente.x*K, C2.nombreCliente.y*K);
+    doc.text($('c_numid').value, C2.cedulaCliente.x*K, C2.cedulaCliente.y*K);
+    /* firma recortada del canvas */
+    doc.addImage(cv.toDataURL('image/png'),'PNG', C2.firma.x*K, C2.firma.y*K, C2.firma.w*K, C2.firma.h*K);
+
+    /* anexos */
+    function anexo(titulo, foto){
+      doc.addPage('letter');
+      doc.setFillColor(14,124,91); doc.rect(0,0,612,46,'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(13); doc.setFont(undefined,'bold');
+      doc.text(titulo, 306, 29, {align:'center'});
+      doc.setFont(undefined,'normal'); doc.setTextColor(20,30,60);
+      const margen=40, maxW=612-2*margen, maxH=792-46-2*margen;
+      let w=foto.w, h=foto.h; const k=Math.min(maxW/w, maxH/h); w*=k; h*=k;
+      doc.addImage(foto.data,'JPEG',(612-w)/2, 46+margen, w, h);
+    }
+    anexo('ANEXO 1 — Servicio público existente', estado.foto1);
+    anexo('ANEXO 2 — Documento de identidad del cliente', estado.foto2);
+
+    /* nombre de archivo y salida */
+    const limpio=s=>s.trim().replace(/[^A-Za-z0-9ÁÉÍÓÚÑáéíóúñ ]/g,'').replace(/ +/g,'_').slice(0,40);
+    const nombreArchivo='Solicitud_C002_'+limpio($('c_direccion').value)+'_'+$('f_ano').value+'-'+String($('f_mes').value).padStart(2,'0')+'-'+String($('f_dia').value).padStart(2,'0')+'.pdf';
+    const blob=doc.output('blob');
+    const res=$('resultado'); res.innerHTML='';
+    /* compartir directo (WhatsApp / correo) si el celular lo permite */
+    const archivo=new File([blob],nombreArchivo,{type:'application/pdf'});
+    if(navigator.canShare && navigator.canShare({files:[archivo]})){
+      const b=document.createElement('a'); b.href='#'; b.textContent='📤 Compartir el PDF (elegir contacto)';
+      b.onclick=e=>{e.preventDefault(); navigator.share({files:[archivo], title:nombreArchivo});};
+      res.appendChild(b);
+    }
+    const d=document.createElement('a'); d.href=URL.createObjectURL(blob); d.download=nombreArchivo;
+    d.textContent='⬇️ Descargar '+nombreArchivo; res.appendChild(d);
+    /* accesos directos al destinatario diligenciado */
+    const dirTxt=$('c_direccion').value.trim();
+    const msj='Buen día. Le compartimos la solicitud de servicios de acueducto y alcantarillado (formato C-002) del inmueble '+dirTxt+'. Quedamos atentos. — SANEAR S.A.S.';
+    let num=cel.replace(/\D/g,'');
+    if(num.length===10 && num[0]==='3') num='57'+num;
+    if(num){
+      const wa=document.createElement('a'); wa.href='https://wa.me/'+num+'?text='+encodeURIComponent(msj);
+      wa.target='_blank'; wa.textContent='💬 Abrir WhatsApp del cliente ('+cel+')'; res.appendChild(wa);
+    }
+    if(em){
+      const mc=document.createElement('a');
+      mc.href='mailto:'+em+'?subject='+encodeURIComponent('Solicitud de servicios C-002 — '+dirTxt)+'&body='+encodeURIComponent(msj);
+      mc.textContent='✉️ Escribir al correo del cliente'; res.appendChild(mc);
+    }
+    const ayuda=document.createElement('p'); ayuda.className='nota';
+    ayuda.textContent='Orden sugerido: 1) toque "Compartir el PDF" y elija WhatsApp o el correo — el archivo va adjunto y usted elige el contacto. Los botones de WhatsApp y correo abren directo el chat o mensaje del cliente con el texto listo; allí adjunte el PDF descargado si lo prefiere por esa vía.';
+    res.appendChild(ayuda);
+    res.scrollIntoView({behavior:'smooth'});
+  }catch(ex){
+    const eg2=$('errGlobal'); eg2.style.display='block'; eg2.textContent='Error generando el PDF: '+ex.message;
+  }finally{
+    btn.disabled=false; btn.textContent='Generar PDF de la solicitud';
+  }
+});
+</script>
+<script>
+if('serviceWorker' in navigator){ try{ navigator.serviceWorker.register('sw.js'); }catch(e){} }
+</script>
+</body>
+</html>
