@@ -53,9 +53,60 @@ input[type=file]{display:none}
 #resultado a{display:block; text-align:center; background:var(--verde-osc); color:#fff; text-decoration:none; border-radius:11px; padding:14px; font-weight:700; margin-top:8px}
 .errGlobal{background:var(--error-cl); color:var(--error); border:1px solid var(--error); border-radius:9px; padding:10px 12px; font-size:.85rem; margin-top:10px; display:none}
 .pieVersion{text-align:center; color:var(--gris); font-size:.72rem; margin:18px 0 4px}
+/* portada estilo institucional */
+#portada{position:fixed; inset:0; z-index:50; background:#fff; display:flex; flex-direction:column;
+  align-items:center; overflow:hidden; transition:opacity .35s ease, visibility .35s}
+#portada.oculta{opacity:0; visibility:hidden}
+#portada .franjaTop{width:100%; height:56px; flex:none;
+  background:linear-gradient(90deg,#3FAE49,#8CC63F); border-radius:0 0 55% 45%/0 0 26px 34px}
+#portada .franjaBot{width:100%; height:64px; flex:none; margin-top:auto;
+  background:linear-gradient(90deg,#8CC63F,#2E9E4B); border-radius:60% 40% 0 0/30px 22px 0 0}
+#portada .zona{flex:1; width:100%; max-width:430px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; position:relative; padding:10px 26px; text-align:center}
+#portada .marcaAgua{position:absolute; left:-70px; top:50%; transform:translateY(-46%); width:300px; height:300px; opacity:.5; pointer-events:none}
+#portada .tagline{color:#2E9E4B; font-style:italic; font-weight:700; font-size:.82rem; margin:0 0 6px}
+#portada .logo{display:flex; align-items:center; gap:8px; margin-bottom:8px}
+#portada .logo svg{width:52px; height:52px}
+#portada .logo span{font-size:2rem; font-weight:800; letter-spacing:.5px;
+  background:linear-gradient(90deg,#2E9E4B,#0E7C8C); -webkit-background-clip:text; background-clip:text; color:transparent}
+#portada .subtitulo{color:#7A857F; font-size:.8rem; margin:0 0 40px}
+#portada .bienvenido{color:#2E9E4B; font-style:italic; font-weight:800; font-size:1.35rem; margin:0 0 34px; position:relative}
+#portada button{position:relative; border:none; cursor:pointer; padding:15px 34px; min-width:230px;
+  font-size:1.02rem; font-weight:800; letter-spacing:.6px; color:#fff; border-radius:12px;
+  background:linear-gradient(180deg,#7CC144 0%,#3FAE49 45%,#188B3C 100%);
+  box-shadow:0 5px 14px rgba(24,139,60,.45), inset 0 1px 0 rgba(255,255,255,.55);
+  text-shadow:0 1px 2px rgba(0,0,0,.25)}
+#portada button::after{content:""; position:absolute; left:6%; right:6%; top:8%; height:38%;
+  background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.05)); border-radius:10px; pointer-events:none}
+#portada button:active{transform:scale(.97)}
 </style>
 </head>
 <body>
+<div id="portada">
+  <div class="franjaTop"></div>
+  <div class="zona">
+    <svg class="marcaAgua" viewBox="0 0 100 100" fill="none">
+      <path d="M20 78 C 2 60, 8 34, 30 30 C 46 27, 55 38, 55 50 C 55 38, 66 26, 80 32 C 96 39, 94 62, 74 74 C 60 82, 40 84, 20 78 Z"
+            stroke="#E2F2E0" stroke-width="7" fill="none" stroke-linecap="round"/>
+    </svg>
+    <p class="tagline">Conectando comunidades</p>
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none">
+        <circle cx="17" cy="13" r="6" fill="#3FAE49"/>
+        <circle cx="31" cy="13" r="6" fill="#0E7C8C"/>
+        <path d="M8 40 C 8 26, 22 24, 24 33 C 26 24, 40 26, 40 40 C 34 44, 14 44, 8 40 Z" fill="url(#gv)"/>
+        <defs><linearGradient id="gv" x1="8" y1="30" x2="40" y2="40">
+          <stop offset="0" stop-color="#3FAE49"/><stop offset="1" stop-color="#0E7C8C"/>
+        </linearGradient></defs>
+      </svg>
+      <span>VINCULACIÓN</span>
+    </div>
+    <p class="subtitulo">Solicitud de servicios de acueducto y alcantarillado · C-002</p>
+    <p class="bienvenido">Bienvenido</p>
+    <button type="button" id="btnEntrar">CREAR FORMULARIO</button>
+  </div>
+  <div class="franjaBot"></div>
+</div>
 <header>
   <h1>Vinculación de Clientes</h1>
   <p>Formato C-002 · Solicitud de servicios de acueducto y alcantarillado · EPM</p>
@@ -228,17 +279,23 @@ input[type=file]{display:none}
     <button class="fotoBtn" type="button" onclick="document.getElementById('foto1').click()">📷 Tomar / elegir foto</button>
     <input type="file" id="foto1" accept="image/*" capture="environment">
   </div>
-  <label>Anexo 2 — Foto de la cédula del cliente <span class="req">*</span></label>
+  <label>Anexo 2 — Cédula del cliente, cara frontal <span class="req">*</span></label>
   <div class="fotoBox" id="box_foto2">
     <img id="img_foto2" style="display:none" alt="">
     <button class="fotoBtn" type="button" onclick="document.getElementById('foto2').click()">📷 Tomar / elegir foto</button>
     <input type="file" id="foto2" accept="image/*" capture="environment">
   </div>
+  <label>Anexo 2 — Cédula del cliente, cara posterior <span class="req">*</span></label>
+  <div class="fotoBox" id="box_foto3">
+    <img id="img_foto3" style="display:none" alt="">
+    <button class="fotoBtn" type="button" onclick="document.getElementById('foto3').click()">📷 Tomar / elegir foto</button>
+    <input type="file" id="foto3" accept="image/*" capture="environment">
+  </div>
 </div></div>
 
 <div class="errGlobal" id="errGlobal"></div>
 <div id="resultado"></div>
-<p class="pieVersion">Vinculación C-002 · v1 · funciona sin conexión</p>
+<p class="pieVersion">Vinculación C-002 · v4 prueba · funciona sin conexión</p>
 </main>
 
 <div class="barraFinal"><button id="btnGenerar" type="button">Generar PDF de la solicitud</button></div>
@@ -276,6 +333,13 @@ document.querySelectorAll('.chips').forEach(g=>{
       if(g.id==='g_existente') $('bloqueOtros').style.display = estado.grupos.g_existente.includes('otros')?'block':'none';
     });
   });
+});
+
+/* portada */
+$('btnEntrar').addEventListener('click', ()=>{
+  $('portada').classList.add('oculta');
+  window.scrollTo(0,0);
+  setTimeout(ajustarCanvas, 400); /* el lienzo de firma se dimensiona ya visible */
 });
 
 /* valores por defecto */
@@ -342,6 +406,7 @@ function cargarFoto(inputId, imgId, clave){
 }
 cargarFoto('foto1','img_foto1','foto1');
 cargarFoto('foto2','img_foto2','foto2');
+cargarFoto('foto3','img_foto3','foto3');
 
 /* ================= coordenadas sobre el formato (px de imagen 816x1056) ================= */
 /* Calibración: si un dato sale corrido en el PDF, se ajusta aquí. K convierte px→pt. */
@@ -404,7 +469,8 @@ $('btnGenerar').addEventListener('click', async ()=>{
   if(!(can.includes('todos')||can.length>=2)) err.push('Seleccione mínimo 2 canales de contacto (o "Todos los canales").');
   if(!hayFirma) err.push('Falta la firma del cliente.');
   if(!estado.foto1) err.push('Falta la foto del servicio existente (Anexo 1).');
-  if(!estado.foto2) err.push('Falta la foto de la cédula (Anexo 2).');
+  if(!estado.foto2) err.push('Falta la foto frontal de la cédula (Anexo 2).');
+  if(!estado.foto3) err.push('Falta la foto posterior de la cédula (Anexo 2).');
   const eg=$('errGlobal');
   if(err.length){ eg.style.display='block'; eg.innerHTML='<b>Antes de generar el PDF:</b><br>• '+err.join('<br>• '); eg.scrollIntoView({behavior:'smooth'}); return; }
   eg.style.display='none';
@@ -479,7 +545,18 @@ $('btnGenerar').addEventListener('click', async ()=>{
       doc.addImage(foto.data,'JPEG',(612-w)/2, 46+margen, w, h);
     }
     anexo('ANEXO 1 — Servicio público existente', estado.foto1);
-    anexo('ANEXO 2 — Documento de identidad del cliente', estado.foto2);
+    /* anexo 2: cédula frente y reverso en una sola página */
+    doc.addPage('letter');
+    doc.setFillColor(14,124,91); doc.rect(0,0,612,46,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(13); doc.setFont(undefined,'bold');
+    doc.text('ANEXO 2 — Documento de identidad (frente y reverso)', 306, 29, {align:'center'});
+    doc.setFont(undefined,'normal'); doc.setTextColor(20,30,60);
+    [['Frente',estado.foto2,56],['Reverso',estado.foto3,420]].forEach(([rot,foto,yTop])=>{
+      doc.setFontSize(10); doc.text(rot, 40, yTop+8);
+      const maxW=612-80, maxH=330;
+      let w=foto.w, h=foto.h; const k=Math.min(maxW/w, maxH/h); w*=k; h*=k;
+      doc.addImage(foto.data,'JPEG',(612-w)/2, yTop+14, w, h);
+    });
 
     /* nombre de archivo y salida */
     const limpio=s=>s.trim().replace(/[^A-Za-z0-9ÁÉÍÓÚÑáéíóúñ ]/g,'').replace(/ +/g,'_').slice(0,40);
